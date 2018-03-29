@@ -5,6 +5,8 @@ import com.credits.wallet.desktop.App;
 import com.credits.wallet.desktop.AppState;
 import com.credits.wallet.desktop.Dictionaries;
 import com.credits.wallet.desktop.utils.Utils;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -196,15 +198,18 @@ public class Form6Controller extends Controller implements Initializable {
             // do nothing - no user's coins
         }
 
-        cbCoin.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                AppState.coin = AppState.coins.get((int) newValue);
-                double balance = getBalance(AppState.coins.get((int) newValue));
-                labCredit.setText(Converter.toString(balance));
-            } catch (Exception e) {
-                labCredit.setText("");
-                e.printStackTrace();
-                Utils.showError(ERR_GETTING_BALANCE);
+        cbCoin.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                try {
+                    AppState.coin=AppState.coins.get((int) newValue);
+                    double balance=getBalance(AppState.coins.get((int) newValue));
+                    labCredit.setText(Converter.toString(balance));
+                } catch (Exception e) {
+                    labCredit.setText("");
+                    LOGGER.error(ERR_GETTING_BALANCE, e);
+                    Utils.showError(ERR_GETTING_BALANCE);
+                }
             }
         });
 
